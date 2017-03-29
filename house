@@ -1,0 +1,30 @@
+%% householder vector reduction
+% [v,x] = house(x)
+% input: x for reduction, size: mx1
+% output: normalized u, and reduced vector x
+% orthogonal matrix H: H*x = ||x||*e1
+% 
+function [v, x, H] = house(x)
+    m = size(x,1);
+    if(m==1)
+        error('column vector x must be in the form: m x 1..\n');
+    end
+    sigma = x(2:m)'*x(2:m);
+    v = [1;x(2:m)];
+    if(sigma==0)&&(x(1)>=0)
+        beta = 0;
+    elseif(sigma==0)&&(x(1)<0)
+        beta = 2;
+    else
+        xNorm = sqrt(x(1)^2+sigma);
+        if(x(1)<=0)
+            v(1) = x(1) - xNorm;
+        else
+            v(1) = -sigma/(x(1)+xNorm);
+        end
+        v = v/sqrt(v'*v);
+        beta = 2;
+    end
+    H = eye(m) - beta*v*v';
+    x = H*x;
+end
