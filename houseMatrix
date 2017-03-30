@@ -1,0 +1,30 @@
+%% householder matrix reduction
+% H * A = B, and B is in the upper-trapezoidal form, with positive diagonal
+% entries
+% 
+function [B, H] = houseMatrix(A)
+    [m, n] = size(A);
+    if(m>n)         % n steps redution
+        steps = n;
+        rows = m;
+    else            % m steps reduction
+        steps = m;
+        A = [A; zeros(1,n)]; % manually add one zero row to make sure 
+                             % positive diagonal entries 
+        rows = m + 1;                     
+    end
+    
+    H = eye(rows);
+    for col=1:steps % column loop
+        [v, A(col:rows,col), Hbar] = house(A(col:rows,col));                        % reduced col
+        A(col:rows,col+1:n) = A(col:rows,col+1:n) - 2*v*(v'*A(col:rows,col+1:n));   % update remians
+        tmp = eye(rows);
+        tmp(col:rows,col:rows) = Hbar;
+        H = tmp*H;
+    end
+    
+    B = A(1:m,:);
+    H = H(1:m,1:m);
+    
+end
+
